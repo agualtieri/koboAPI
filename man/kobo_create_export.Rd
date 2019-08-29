@@ -29,7 +29,7 @@ kobo_create_export(asset_uid, kobo_user, Kobo_pw = "",
 \item{group_sep}{Type of exports to create: can be "csv" or "xls".}
 }
 \description{
-Create exports (endpoint) through API for specified form. Exports allow to download the data via the new KPI.
+Create exports (endpoint) through API for specified form. Exports allow to download the data via the new KPI
 }
 \author{
 Punya Prasad Sapkota (https://github.com/ppsapkota/), Elliott Messeiller

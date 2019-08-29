@@ -1,9 +1,11 @@
 Package: koboAPI
 Type: Package
-Title: Link kobotoolbox-based API with R.
+Title: Link kobotoolbox-based API with R
 Version: 0.1.0
 Authors@R: person("Elliott", "Messeiller", email = "elliott.messeiller@acted.org", role = c("aut", "cre"))
 Depends: 
+  R (>= 3.0.0),
+Imports:
   httr,
   jsonlite,
   dplyr,
@@ -12,9 +14,10 @@ Depends:
   readr,
   stringr,
   tibble,
-  purrr
+  purrr,
+  magrittr
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Description: Provides fonctions to access kobotoolbox-based API with R. Works for kobo.humanitarianresponse.info and kobotoolbox.org
+Description: Provides fonctions to access kobotoolbox-based API with R. Works for kobo.humanitarianresponse.info and kobotoolbox.org, it aslo allows to remove column headers.
 RoxygenNote: 6.1.1

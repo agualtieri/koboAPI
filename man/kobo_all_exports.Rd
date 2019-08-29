@@ -18,7 +18,7 @@ kobo_all_exports(user, pwd = "",
 Returns a dataframe with all the exports available.
 }
 \description{
-Returns a dataframe with all the exports available.
+Returns a dataframe with all the exports available
 }
 \author{
 Elliott Messeiller
