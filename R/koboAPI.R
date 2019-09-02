@@ -6,6 +6,7 @@
 #'
 #' @param formid The ID of the form to be accessed (as a character string). Must be a KPI-type ID (not api V1 ID). See kobo_all_forms for more details.
 #' @param user Optional. A single string indicating the username
+#' @param pwd The password in a single string.
 #' @param api The URL at which the API can be accessed. Default to "kobo.humanitarianresponse.info"
 #'
 #' @return A list with two objects: The "survey" sheet as a dataframe with all the questions variables, and the "choices" sheet as a dataframe with all the choices variables.
@@ -15,7 +16,7 @@
 #' @export kobo_form
 #'
 
-kobo_form <- function(formid, user, api="https://kobo.humanitarianresponse.info") {
+kobo_form <- function(formid, user, pwd, api="https://kobo.humanitarianresponse.info") {
   if(pwd == ""){pwd <- readline("Enter password:")}
   if(pwd == "") stop("No password entered.")
 
@@ -116,7 +117,7 @@ kobo_all_forms <- function(user,pwd, api = "https://kobo.humanitarianresponse.in
 #'
 
 
-kobo_all_exports <- function(user,pwd="", api="https://kobo.humanitarianresponse.info") {
+kobo_all_exports <- function(user, pwd , api="https://kobo.humanitarianresponse.info") {
   if(pwd == ""){pwd <- readline("Enter password:")}
   if(pwd == "") stop("No password entered.")
 
@@ -126,7 +127,7 @@ kobo_all_exports <- function(user,pwd="", api="https://kobo.humanitarianresponse
 
   all_exports_df <-  as.data.frame(all_exports_text_json$results$data)%>%
     dplyr::bind_cols(data.frame("url_export" = all_exports_text_json$results$url))%>%
-    dplyr::bind_cols(data.frame("date_created"= ymd_hms(all_exports_text_json$results$date_created)))%>%
+    dplyr::bind_cols(data.frame("date_created"= lubridate::ymd_hms(all_exports_text_json$results$date_created)))%>%
     dplyr::mutate(uid_form = str_replace(source, paste0(api, "\\/assets\\/"),""),
            uid_form = str_replace(uid_form, "\\/$",""))
 
@@ -152,7 +153,7 @@ kobo_all_exports <- function(user,pwd="", api="https://kobo.humanitarianresponse
 #'
 
 
-kobo_data <- function(formid, user,pwd, api="https://kobo.humanitarianresponse.info", seperator="\\/") {
+kobo_data <- function(formid, user, pwd, api="https://kobo.humanitarianresponse.info", seperator="\\/") {
   if(pwd == ""){pwd <- readline("Enter password:")}
   if(pwd == "") stop("No password entered.")
   all_forms <- kobo_all_forms(user, pwd, api)
@@ -167,8 +168,8 @@ kobo_data <- function(formid, user,pwd, api="https://kobo.humanitarianresponse.i
 
   raw_data <- kobo_noGroupsHeader(raw_data, formid, pwd, user, api)
 
-  raw_data <- kobo_AddstartSelectMultiple(raw_data)
-  names(raw_data) <- gsub("\\.","\\/", names(raw_data))
+  #raw_data <- kobo_AddstartCol_SelectMultiple(raw_data)
+  #names(raw_data) <- gsub("\\.","\\/", names(raw_data))
 
 
   return(raw_data)
@@ -200,11 +201,11 @@ kobo_noGroupsHeader <- function(data,formid, pwd, user, api="https://kobo.humani
   if(pwd == ""){pwd <- readline("Enter password:")}
   if(pwd == "") stop("No password entered.")
 
-  form <-kobo_form(formid, user , api)
+  form <-kobo_form(formid, user, pwd , api)
   survey_sheet <- form$survey
   groups <- paste0(as.list(survey_sheet%>%filter(type %in% c("begin_group", "begin group"))%>% select(name))[[1]],seperator)
   groups <- c(groups, paste0("meta", seperator))
-  collapse_groups <- str_cstr_c(groups, collapse = "|")
+  collapse_groups <- stringr::str_c(groups, collapse = "|")
   groups_removed <- purrr::map(names(data), str_remove, collapse_groups)
   names(data) <- groups_removed
   return(data)
@@ -248,16 +249,16 @@ kobo_api_type <- function(api="https://kobo.humanitarianresponse.info"){
 #' @param lang Language to be used for the export. Defaults to "xml"
 #' @param fields_from_all_versions Include or not all versions of the form. Logical string: "true" or "false". Defaults to "true"
 #' @param hierarchy_in_labels Group names are displayed or not in labels of the dataframe. Logical string: "true" or "false". Defaults to "false"
-#' @param group_sep Type of exports to create: can be "csv" or "xls".
+#' @param group_sep Group header separator. Default "/".
 #' @param api The URL at which the API can be accessed.
 #'
 #' @author Punya Prasad Sapkota (https://github.com/ppsapkota/), Elliott Messeiller
 #'
 #' @export kobo_create_export
 
-kobo_create_export<-function(asset_uid, kobo_user, Kobo_pw ="", api="https://kobo.humanitarianresponse.info", type ="csv",lang="xml",fields_from_all_versions = "true",hierarchy_in_labels ="false",group_sep = "/"){
-  if(Kobo_pw == ""){Kobo_pw <- readline("Enter password:")}
-  if(Kobo_pw == "") stop("No password entered.")
+kobo_create_export<-function(asset_uid, kobo_user, kobo_pwd, api="https://kobo.humanitarianresponse.info", type =".csv",lang="xml",fields_from_all_versions = "true",hierarchy_in_labels ="false",group_sep = "/"){
+  if(kobo_pwd == ""){kobo_pwd <- readline("Enter password:")}
+  if(kobo_pwd == "") stop("No password entered.")
 
 
   api_url_export<-paste0(api,"/exports/")
@@ -271,13 +272,21 @@ kobo_create_export<-function(asset_uid, kobo_user, Kobo_pw ="", api="https://kob
           hierarchy_in_labels=hierarchy_in_labels,
           group_sep=group_sep)
   #fetch data
-  result<-httr::POST (url=api_url_export,
+  result<-httr::POST (url=api_url_asset,
                       body=d,
-                      authenticate(kobo_user,Kobo_pw),
-                      progress()
+                      httr::authenticate(kobo_user,kobo_pwd),
+                      httr::progress()
   )
   return(result$status_code)
 }
+
+
+api <- "https://kobo.humanitarianresponse.info"
+kobo_user <- "reach_yemen"
+kobo_pwd <- "KOBOyemREACH2017"
+asset_uid <- "aCeKQQhWH9USSoGY5EtARe"
+type=".csv"
+lang="xml"
 
 #' @name kobo_AddstartCol_SelectMultiple
 #' @rdname kobo_AddstartCol_SelectMultiple
@@ -292,19 +301,24 @@ kobo_create_export<-function(asset_uid, kobo_user, Kobo_pw ="", api="https://kob
 #' @export kobo_AddstartCol_SelectMultiple
 #'
 
-kobo_AddstartCol_SelectMultiple<- function(data, form, seperator = "\\/"){
+kobo_AddstartCol_SelectMultiple<- function(data, form, separator = "\\/"){
   survey <- form$survey
   all_selectMultiple <- survey[survey$type == "select_multiple", "name"]
 
   if(length(all_selectMultiple)==0){warning(paste0("No select_multiple question found with. Please double check that you have select_multiple qustions in your form."))}
 
-  expr_firstCol <- paste0(all_selectMultiple, seperator, ".*?$")
+  expr_firstCol <- paste0(all_selectMultiple, separator, ".*?$")
 
-  indices <- purrr::map(expr_firstcol, grep, names(data))
+  indices <- purrr::map(expr_firstCol, grep, names(data))
   min_indices <- purrr::map_dbl(indices, min)
   new_data <- purrr::map2(min_indices, all_selectMultiple, ~ add_column(data, .y = NA, .before = .x))
   return(new_data)
 }
+
+
+separator <- "\\/"
+data <- response
+
 
 #' @name nullToNA
 #' @rdname nullToNA
