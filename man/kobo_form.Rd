@@ -4,12 +4,15 @@
 \alias{kobo_form}
 \title{Download form from the platform}
 \usage{
-kobo_form(formid, user, api = "https://kobo.humanitarianresponse.info")
+kobo_form(formid, user, pwd,
+  api = "https://kobo.humanitarianresponse.info")
 }
 \arguments{
 \item{formid}{The ID of the form to be accessed (as a character string). Must be a KPI-type ID (not api V1 ID). See kobo_all_forms for more details.}
 
 \item{user}{Optional. A single string indicating the username}
+
+\item{pwd}{The password in a single string.}
 
 \item{api}{The URL at which the API can be accessed. Default to "kobo.humanitarianresponse.info"}
 }

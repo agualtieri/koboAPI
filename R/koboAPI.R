@@ -12,6 +12,7 @@
 #' @return A list with two objects: The "survey" sheet as a dataframe with all the questions variables, and the "choices" sheet as a dataframe with all the choices variables.
 #'
 #' @author Elliott Messeiller
+#' @importFrom stats filter
 #'
 #' @export kobo_form
 #'
@@ -35,12 +36,12 @@ kobo_form <- function(formid, user, pwd, api="https://kobo.humanitarianresponse.
     choices_labels <- as.data.frame(do.call(rbind, choices$label))
     names(choices_labels) <- languages_labels
     choices <- cbind(choices, choices_labels) %>%
-      select(-label)
+      dplyr::select(-label)
 
     survey_labels <- as.data.frame(do.call(rbind, survey$label))
     names(survey_labels) <- languages_labels
     survey <- cbind(survey, survey_labels) %>%
-      select(-label)
+      dplyr::select(-label)
   }
 
   form <- list("survey" = survey, "choices" = choices)
@@ -61,6 +62,7 @@ kobo_form <- function(formid, user, pwd, api="https://kobo.humanitarianresponse.
 #' @return Dataframe with all forms available for the user.
 #'
 #' @author Elliott Messeiller
+#' @importFrom stats filter
 #'
 #' @export kobo_all_forms
 #'
@@ -112,6 +114,7 @@ kobo_all_forms <- function(user,pwd, api = "https://kobo.humanitarianresponse.in
 #' @return Returns a dataframe with all the exports available.
 #'
 #' @author Elliott Messeiller
+#' @importFrom stats filter
 #'
 #' @export kobo_all_exports
 #'
@@ -128,8 +131,8 @@ kobo_all_exports <- function(user, pwd , api="https://kobo.humanitarianresponse.
   all_exports_df <-  as.data.frame(all_exports_text_json$results$data)%>%
     dplyr::bind_cols(data.frame("url_export" = all_exports_text_json$results$url))%>%
     dplyr::bind_cols(data.frame("date_created"= lubridate::ymd_hms(all_exports_text_json$results$date_created)))%>%
-    dplyr::mutate(uid_form = str_replace(source, paste0(api, "\\/assets\\/"),""),
-           uid_form = str_replace(uid_form, "\\/$",""))
+    dplyr::mutate(uid_form = stringr::str_replace(source, paste0(api, "\\/assets\\/"),""),
+           uid_form = stringr::str_replace(uid_form, "\\/$",""))
 
   return(all_exports_df)
 }
@@ -148,6 +151,7 @@ kobo_all_exports <- function(user, pwd , api="https://kobo.humanitarianresponse.
 #' @return A dataframe containing the data, with no group names.
 #'
 #' @author Elliott Messeiller
+#' @importFrom stats filter
 #'
 #' @export kobo_data
 #'
@@ -187,26 +191,27 @@ kobo_data <- function(formid, user, pwd, api="https://kobo.humanitarianresponse.
 #' @param pwd Password of the Kobo account to use
 #' @param user Optional. A single string indicating the username
 #' @param api The URL at which the API can be accessed. Default to "kobo.humanitarianresponse.info"
-#' @param seperator Separator used between select_multiple questions and their choices. Must be a regex expression. Default to forward slash
+#' @param separator Separator used between select_multiple questions and their choices. Must be a regex expression. Default to forward slash
 #' @return A dataframe without groups in headers.
 #'
 #' @author Elliott Messeiller
+#' @importFrom stats filter
 #'
 #' @export kobo_noGroupsHeader
 #'
 
 
-kobo_noGroupsHeader <- function(data,formid, pwd, user, api="https://kobo.humanitarianresponse.info", seperator = "\\/") {
+kobo_noGroupsHeader <- function(data,formid, pwd, user, api="https://kobo.humanitarianresponse.info", separator = "\\/") {
 
   if(pwd == ""){pwd <- readline("Enter password:")}
   if(pwd == "") stop("No password entered.")
 
   form <-kobo_form(formid, user, pwd , api)
   survey_sheet <- form$survey
-  groups <- paste0(as.list(survey_sheet%>%filter(type %in% c("begin_group", "begin group"))%>% select(name))[[1]],seperator)
+  groups <- paste0(as.list(survey_sheet%>%dplyr::filter(type %in% c("begin_group", "begin group"))%>% dplyr::select(name))[[1]],separator)
   groups <- c(groups, paste0("meta", seperator))
   collapse_groups <- stringr::str_c(groups, collapse = "|")
-  groups_removed <- purrr::map(names(data), str_remove, collapse_groups)
+  groups_removed <- purrr::map(names(data), stringr::str_remove, collapse_groups)
   names(data) <- groups_removed
   return(data)
 
@@ -222,6 +227,7 @@ kobo_noGroupsHeader <- function(data,formid, pwd, user, api="https://kobo.humani
 #' @return API type
 #'
 #' @author Elliott Messeiller
+#' @importFrom stats filter
 #'
 #' @export kobo_api_type
 #'
@@ -244,7 +250,7 @@ kobo_api_type <- function(api="https://kobo.humanitarianresponse.info"){
 #'
 #' @param asset_uid UID (ID) of the asset (form) for which an export is created.
 #' @param kobo_user Username of the Kobo account to use.
-#' @param Kobo_pw Password of the Kobo account to use.
+#' @param kobo_pwd Password of the Kobo account to use.
 #' @param type Type of exports to create: can be "csv" or "xls". Defaults to "csv"
 #' @param lang Language to be used for the export. Defaults to "xml"
 #' @param fields_from_all_versions Include or not all versions of the form. Logical string: "true" or "false". Defaults to "true"
@@ -253,6 +259,7 @@ kobo_api_type <- function(api="https://kobo.humanitarianresponse.info"){
 #' @param api The URL at which the API can be accessed.
 #'
 #' @author Punya Prasad Sapkota (https://github.com/ppsapkota/), Elliott Messeiller
+#' @importFrom stats filter
 #'
 #' @export kobo_create_export
 
@@ -281,22 +288,16 @@ kobo_create_export<-function(asset_uid, kobo_user, kobo_pwd, api="https://kobo.h
 }
 
 
-api <- "https://kobo.humanitarianresponse.info"
-kobo_user <- "reach_yemen"
-kobo_pwd <- "KOBOyemREACH2017"
-asset_uid <- "aCeKQQhWH9USSoGY5EtARe"
-type=".csv"
-lang="xml"
-
 #' @name kobo_AddstartCol_SelectMultiple
 #' @rdname kobo_AddstartCol_SelectMultiple
 #' @title  Adds a list column with the choices selected at the beggining of select_multiple questions
 #' @description Adds a list column with the choices selected at the beggining of select_multiple questions
 #' @param data The dataframe to be treated.
 #' @param form A list with two objects: The "survey" sheet as a dataframe with all the questions variables, and the "choices" sheet as a dataframe with all the choices variables. See kobo_form()
-#' @param seperator Separator used between select_multiple questions and their choices. Must be a regex expression. Default to forward slash
+#' @param separator Separator used between select_multiple questions and their choices. Must be a regex expression. Default to forward slash
 #' @return Returns data with the additional columns
 #' @author Elliott Messeiller
+#' @importFrom stats filter
 #'
 #' @export kobo_AddstartCol_SelectMultiple
 #'
@@ -316,10 +317,6 @@ kobo_AddstartCol_SelectMultiple<- function(data, form, separator = "\\/"){
 }
 
 
-separator <- "\\/"
-data <- response
-
-
 #' @name nullToNA
 #' @rdname nullToNA
 #' @title Null to NA
@@ -327,6 +324,7 @@ data <- response
 #' @param x object
 #' @return Returns and NA where a NULL was present
 #' @author Elliott Messeiller
+#' @importFrom stats filter
 #'
 #' @export nullToNA
 

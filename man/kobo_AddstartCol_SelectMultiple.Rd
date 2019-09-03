@@ -4,14 +4,14 @@
 \alias{kobo_AddstartCol_SelectMultiple}
 \title{Adds a list column with the choices selected at the beggining of select_multiple questions}
 \usage{
-kobo_AddstartCol_SelectMultiple(data, form, seperator = "\\\\/")
+kobo_AddstartCol_SelectMultiple(data, form, separator = "\\\\/")
 }
 \arguments{
 \item{data}{The dataframe to be treated.}
 
 \item{form}{A list with two objects: The "survey" sheet as a dataframe with all the questions variables, and the "choices" sheet as a dataframe with all the choices variables. See kobo_form()}
 
-\item{seperator}{Separator used between select_multiple questions and their choices. Must be a regex expression. Default to forward slash}
+\item{separator}{Separator used between select_multiple questions and their choices. Must be a regex expression. Default to forward slash}
 }
 \value{
 Returns data with the additional columns

@@ -5,7 +5,7 @@
 \title{Remove groupes from dataframe header}
 \usage{
 kobo_noGroupsHeader(data, formid, pwd, user,
-  api = "https://kobo.humanitarianresponse.info", seperator = "\\\\/")
+  api = "https://kobo.humanitarianresponse.info", separator = "\\\\/")
 }
 \arguments{
 \item{data}{The dataframe to be treated.}
@@ -18,7 +18,7 @@ kobo_noGroupsHeader(data, formid, pwd, user,
 
 \item{api}{The URL at which the API can be accessed. Default to "kobo.humanitarianresponse.info"}
 
-\item{seperator}{Separator used between select_multiple questions and their choices. Must be a regex expression. Default to forward slash}
+\item{separator}{Separator used between select_multiple questions and their choices. Must be a regex expression. Default to forward slash}
 }
 \value{
 A dataframe without groups in headers.

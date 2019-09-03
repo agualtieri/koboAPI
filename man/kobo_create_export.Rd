@@ -4,8 +4,8 @@
 \alias{kobo_create_export}
 \title{Create exports through API}
 \usage{
-kobo_create_export(asset_uid, kobo_user, Kobo_pw = "",
-  api = "https://kobo.humanitarianresponse.info", type = "csv",
+kobo_create_export(asset_uid, kobo_user, kobo_pwd,
+  api = "https://kobo.humanitarianresponse.info", type = ".csv",
   lang = "xml", fields_from_all_versions = "true",
   hierarchy_in_labels = "false", group_sep = "/")
 }
@@ -14,7 +14,7 @@ kobo_create_export(asset_uid, kobo_user, Kobo_pw = "",
 
 \item{kobo_user}{Username of the Kobo account to use.}
 
-\item{Kobo_pw}{Password of the Kobo account to use.}
+\item{kobo_pwd}{Password of the Kobo account to use.}
 
 \item{api}{The URL at which the API can be accessed.}
 
@@ -26,7 +26,7 @@ kobo_create_export(asset_uid, kobo_user, Kobo_pw = "",
 
 \item{hierarchy_in_labels}{Group names are displayed or not in labels of the dataframe. Logical string: "true" or "false". Defaults to "false"}
 
-\item{group_sep}{Type of exports to create: can be "csv" or "xls".}
+\item{group_sep}{Group header separator. Default "/".}
 }
 \description{
 Create exports (endpoint) through API for specified form. Exports allow to download the data via the new KPI

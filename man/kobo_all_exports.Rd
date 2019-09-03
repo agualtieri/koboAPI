@@ -4,7 +4,7 @@
 \alias{kobo_all_exports}
 \title{Downloads forms from KPI}
 \usage{
-kobo_all_exports(user, pwd = "",
+kobo_all_exports(user, pwd,
   api = "https://kobo.humanitarianresponse.info")
 }
 \arguments{
