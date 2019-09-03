@@ -147,7 +147,7 @@ kobo_all_exports <- function(user, pwd , api="https://kobo.humanitarianresponse.
 #' @param user Optional. A single string indicating the username
 #' @param pwd Password of the Kobo account to use
 #' @param api The URL at which the API can be accessed. Default to "kobo.humanitarianresponse.info"
-#' @param seperator Separator used between select_multiple questions and their choices. Must be a regex expression. Default to forward slash
+#' @param separator Separator used between select_multiple questions and their choices. Must be a regex expression. Default to forward slash
 #' @return A dataframe containing the data, with no group names.
 #'
 #' @author Elliott Messeiller
@@ -157,7 +157,7 @@ kobo_all_exports <- function(user, pwd , api="https://kobo.humanitarianresponse.
 #'
 
 
-kobo_data <- function(formid, user, pwd, api="https://kobo.humanitarianresponse.info", seperator="\\/") {
+kobo_data <- function(formid, user, pwd, api="https://kobo.humanitarianresponse.info", separator="\\/") {
   if(pwd == ""){pwd <- readline("Enter password:")}
   if(pwd == "") stop("No password entered.")
   all_forms <- kobo_all_forms(user, pwd, api)

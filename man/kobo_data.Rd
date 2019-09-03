@@ -5,7 +5,7 @@
 \title{Download data from the platform}
 \usage{
 kobo_data(formid, user, pwd,
-  api = "https://kobo.humanitarianresponse.info", seperator = "\\\\/")
+  api = "https://kobo.humanitarianresponse.info", separator = "\\\\/")
 }
 \arguments{
 \item{formid}{The ID of the form to be accessed (as a character string)}
@@ -16,7 +16,7 @@ kobo_data(formid, user, pwd,
 
 \item{api}{The URL at which the API can be accessed. Default to "kobo.humanitarianresponse.info"}
 
-\item{seperator}{Separator used between select_multiple questions and their choices. Must be a regex expression. Default to forward slash}
+\item{separator}{Separator used between select_multiple questions and their choices. Must be a regex expression. Default to forward slash}
 }
 \value{
 A dataframe containing the data, with no group names.
