@@ -209,7 +209,7 @@ kobo_noGroupsHeader <- function(data,formid, pwd, user, api="https://kobo.humani
   form <-kobo_form(formid, user, pwd , api)
   survey_sheet <- form$survey
   groups <- paste0(as.list(survey_sheet%>%dplyr::filter(type %in% c("begin_group", "begin group"))%>% dplyr::select(name))[[1]],separator)
-  groups <- c(groups, paste0("meta", seperator))
+  groups <- c(groups, paste0("meta", separator))
   collapse_groups <- stringr::str_c(groups, collapse = "|")
   groups_removed <- purrr::map(names(data), stringr::str_remove, collapse_groups)
   names(data) <- groups_removed
