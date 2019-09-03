@@ -329,6 +329,9 @@ kobo_AddstartCol_SelectMultiple<- function(data, form, separator = "\\/"){
 #' @export nullToNA
 
 nullToNA <- function(x) {
-  x[sapply(x, is.null)] <- NA
+  x[sapply(x, is.null)] <- "NA"
   return(x)
 }
+
+utils::globalVariables(c("date_created", "date_modified", "deployment__submission_count",
+                        "has_deployment", "id", "id_string", "label", "name", "old_id", "type", "uid", "uid_form"))
